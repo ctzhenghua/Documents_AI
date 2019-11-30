@@ -1,0 +1,630 @@
+\documentclass[UTF8,a4paper,12pt]{ctexbook} 
+
+\usepackage{graphicx}%学习插入图
+\usepackage{verbatim}%学习注释多行
+\usepackage{booktabs}%表格
+\usepackage{geometry}%图片
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{listings}%代码
+\usepackage{xcolor}  %颜色
+\usepackage{enumitem}%列表格式
+\setenumerate[1]{itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=5pt}
+\setitemize[1]{itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=5pt}
+\setdescription{itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=5pt}
+\usepackage{tcolorbox}
+\usepackage{algorithm}  %format of the algorithm
+\usepackage{algorithmic}%format of the algorithm
+\usepackage{multirow}   %multirow for format of table
+\usepackage{tabularx} 	%表格排版格式控制
+\usepackage{array}	%表格排版格式控制
+\usepackage{hyperref} %超链接 \url{URL}
+\usepackage{tikz}
+\usepackage{dirtree}
+
+\CTEXsetup[format+={\flushleft}]{section}
+
+%%%% 设置图片目录
+\graphicspath{{figure/}}
+
+%%%% 段落首行缩进两个字 %%%%
+\makeatletter
+\let\@afterindentfalse\@afterindenttrue
+\@afterindenttrue
+\makeatother
+\setlength{\parindent}{2em}  %中文缩进两个汉字位
+
+%%%% 下面的命令重定义页面边距，使其符合中文刊物习惯 %%%%
+\addtolength{\topmargin}{-54pt}
+\setlength{\oddsidemargin}{0.63cm}  % 3.17cm - 1 inch
+\setlength{\evensidemargin}{\oddsidemargin}
+\setlength{\textwidth}{14.66cm}
+\setlength{\textheight}{24.00cm}    % 24.62
+
+%%%% 下面的命令设置行间距与段落间距 %%%%
+\linespread{1.0}
+\setlength{\parskip}{0.5\baselineskip}
+\geometry{left=1.6cm,right=1.8cm,top=2cm,bottom=1.7cm} %设置文章宽度
+\pagestyle{plain} 		  %设置页面布局
+
+%代码效果定义
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\lstset{ %
+	backgroundcolor=\color{white},   % choose the background color
+	basicstyle=\footnotesize\ttfamily,      % size of fonts used for the code
+	%stringstyle=\color{codepurple},
+	%basicstyle=\footnotesize,
+	%breakatwhitespace=false,         
+	%breaklines=true,                 
+	%captionpos=b,                    
+	%keepspaces=true,                 
+	%numbers=left,                    
+	%numbersep=5pt,                  
+	%showspaces=false,                
+	%showstringspaces=false,
+	%showtabs=false,        
+	columns=fixed,
+	breaklines=true,                 % automatic line breaking only at whitespace
+	captionpos=b,                    % sets the caption-position to bottom
+	tabsize=4,
+	commentstyle=\color{mygreen},    % comment style
+	escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+	keywordstyle=\color{blue},       % keyword style
+	stringstyle=\color{mymauve}\ttfamily,     % string literal style
+	frame=L,
+	xleftmargin = .04\textwidth,
+	rulesepcolor=\color{red!20!green!20!blue!20},
+	% identifierstyle=\color{red},
+	escapeinside=``,
+	language=c++,
+}
+ \author{\kaishu 郑华}
+ \title{\heiti A·I笔记}
+ 
+\begin{document}          %正文排版开始
+ 	\maketitle
+
+\chapter{基础概念}
+	\section{是什么}
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=\linewidth]{Basic_001}
+			\includegraphics[width=\linewidth]{Basic_002}
+		\end{figure}
+		
+		利用机器学习，人们输入的是数据和从这些数据中预期得到的答案，系统输出的是\textbf{规则}。这些规则随后可应用于新的数据，并使计算机自主生成答案。
+		
+		机器学习的技术定义：在预先定义好的可能性空间中(数据不同表示-预处理)，利用\textbf{反馈信号}的指引来寻找输入数据的有用表示。
+		
+		机器学习从学习的种类一般分为3种：无监督学习、监督学习、强化学习。
+		
+		监督学习：每一个样本都有明确的标签(Right Answer),最后总结出这些训练样本向量与标签的映射关系。
+		
+		无监督学习：在没有标签的情况下尝试找出其内部蕴含关系的一种挖掘工作，常见的如分类、聚合。
+		
+		强化学习：本质是解决 decision making 问题，即\textbf{自动进行决策}，并且可以做连续决策。
+	
+		\subsection{无监督学习}
+			\paragraph{聚类 clustering}
+			
+		
+		\subsection{监督学习}
+			\paragraph{分类 classifing}
+		
+		
+			\paragraph{回归 regression}
+				通过70\% 的数据训练出规则，通过30\%剩下的数据进行回归测试拟合。	
+				
+				加入设计的线性关系类似于 $ y = f(x) = wx + b$, 则训练函数类似于
+				
+				$$ Loss = \Sigma_{i=1}^{n}|wx_i + b - y_i|$$		
+		
+		
+		\subsection{迁移学习}
+			专注于存储已有问题的解决模型，并\textbf{将其利用在其他不同但相关问题上}。比如说，用来辨识汽车的知识（或者是模型）也可以被用来提升识别卡车的能力。
+		
+		\subsection{强化学习}
+			\url{https://blog.csdn.net/j754379117/article/details/83037799}
+			
+			\url{https://www.jianshu.com/p/5ceca53aff0b}
+			
+			
+			\textbf{强调如何基于环境而行动，以取得最大化的预期利益}。\textit{其灵感来源于心理学中的行为主义理论，即有机体如何在环境给予的奖励或惩罚的刺激下，逐步形成对刺激的预期，产生能获得最大利益的习惯性行为。}
+			
+			本质是解决 decision making 问题，即\textbf{自动进行决策}，并且可以做连续决策。
+			
+			强化学习最早可以追溯到\textbf{巴甫洛夫的条件反射实验}，它从动物行为研究和优化控制两个领域独立发展，最终经Bellman之手将其抽象为\textbf{马尔可夫决策过程} (Markov Decision Process，MDP).
+			
+			它主要包含四个元素，\textit{agent，环境状态，行动，奖励}, 强化学习的目标就是\textbf{获得最多的累计奖励}。
+			
+			
+			让我们以小孩学习走路来做个形象的\textbf{例子}：
+			
+			小孩想要走路，但在这之前，他需要先站起来，站起来之后还要保持平衡，接下来还要先迈出一条腿，是左腿还是右腿，迈出一步后还要迈出下一步。
+			
+			小孩就是 \textbf{agent}，他试图通过采取\textbf{行动}（即行走）来适应\textbf{环境}（行走的表面），并且从一个\textbf{状态转变}到另一个状态（即他走的每一步），当他完成任务的子任务（即走了几步）时，孩子得到\textbf{奖励}（给巧克力吃），并且当他不能走路时，就不会给巧克力。
+			
+			\paragraph{要素}
+				几大元素分别是：
+				
+				\begin{itemize}
+					\item \textbf{Agent}  ，输入通常是状态State，输出通常是策略Policy
+					\item \textbf{Action} ，就是从一点走到下一点 {A -> B, C -> D, etc}，动作空间。比如小人玩游戏，只有上下左右可移动，那Actions就是上、下、左、右。
+					\item \textbf{States} ，就是节点 {A, B, C, D, E, F}，就是Agent 的输入
+					\item \textbf{Reward} ，就是边上的 cost，进入某个状态时，能带来正奖励或者负奖励。
+					\item \textbf{Policy} ，就是完成任务的整条路径 {A -> C -> F}
+					\item \textbf{Environment} ，接收action，返回state和reward。
+				\end{itemize}
+				
+				\begin{figure}[H]
+					\centering
+					\includegraphics[width=\linewidth]{RL_Basic}
+					\caption{强化学习示意}
+				\end{figure}
+				
+				首先通过动作$a_t$与环境$env$进行交互，在动作$a_t$和环境$env$的作用下，Agent 会产生新的状态$s_t$，同时环境会给出一个\textbf{立即回报}$r_t$。
+				
+				\textit{如此循环下去}，智能体与环境进行不断地交互从而产生很多数据。强化学习算法\textbf{利用产生的数据修改自身的动作策略}，再与环境交互，产生新的数据，并利用新的数据进一步改善自身的行为，经过数次迭代学习后，智能体能最终地学到完成相应任务的最优动作\textit{（最优策略）}。
+				
+			\paragraph{分类}
+				从强化学习的几个元素的角度划分的话，方法主要有下面几类：
+				
+				\begin{itemize}
+					\item \textbf{Policy based}, 关注点是找到最优策略。
+					\item \textbf{Value based}, 关注点是找到最优奖励总和。
+					\item \textbf{Action based}, 关注点是每一步的最优行动。
+				\end{itemize}
+			
+			
+			\paragraph{特点}
+				强化学习所解决的问题的特点：
+				\begin{itemize}[itemindent = 1em]
+					\item 智能体和环境之间不断进行交互
+					\item 搜索和试错
+					\item 延迟奖励（当前所做的动作可能很多步之后才会产生相应的结果）
+				\end{itemize}
+			
+				收敛条件或目标：
+				\begin{itemize}[itemindent = 1em]
+					\item 获取更多的累积奖励
+					\item 获得更可靠的估计
+				\end{itemize}
+			
+			
+			\paragraph{与其他机器学习的区别}
+				\subparagraph{和监督式学习的区别}
+					监督式学习就好比你在学习的时候，有一个导师在旁边指点，他知道怎么是对的怎么是错的.
+					
+					强化学习会\textbf{在没有任何标签的情况下}，通过先尝试做出一些行为得到一个结果，通过这个结果是对还是错的反馈，调整之前的行为，就这样不断的调整，算法能够学习到在什么样的情况下选择什么样的行为可以得到最好的结果。
+					
+					就好比你有一只还没有训练好的小狗，每当它把屋子弄乱后，就减少美味食物的数量（惩罚），每次表现不错时，就加倍美味食物的数量（奖励），那么小狗最终会学到一个知识，就是把客厅弄乱是不好的行为。
+					
+					\textbf{两种学习方式}\underline{都会学习出输入到输出的一个映射}，监督式学习出的是\textbf{之间的关系}，\textit{可以告诉算法什么样的输入对应着什么样的输出}，强化学习出的是\textbf{给机器的反馈 reward function}，\textit{即用来判断这个行为是好是坏}。
+					
+					\underline{强化学习}的\textbf{结果反馈有延时}，有时候可能需要走了很多步以后才知道以前的某一步的选择是好还是坏，而\underline{监督学习}做了比较坏的选择会\textbf{立刻反馈给算法}。
+					
+					\underline{强化学习}面对的\textbf{输入总是在变化}，每当算法做出一个行为，它影响下一次决策的输入，而\underline{监督学习}的输入是\textbf{独立同分布的}。
+					
+					通过强化学习，一个 agent 可以\textbf{在探索和开发（exploration and exploitation）之间做权衡，并且选择一个最大的回报}。 
+					\verb|exploration| 会尝试很多不同的事情，看它们是否比以前尝试过的更好。 
+					
+					\verb|exploitation| 会尝试过去经验中最有效的行为。
+					
+					一般的监督学习算法不考虑这种平衡，就只是是 exploitative。
+					
+					
+				\subparagraph{和非监督式学习的区别}
+					非监督式不是学习输入到输出的映射，而是\textbf{模式}。例如在向用户推荐新闻文章的任务中，非监督式会找到用户先前已经阅读过类似的文章并向他们推荐其一.
+					
+					强化学习将通过向用户先推荐少量的新闻，并不断获得来自用户的\textbf{反馈}，最后构建用户可能会喜欢的文章的“知识图”。
+				
+				
+				\subparagraph{DQN:Deep-Q-Network}
+					深度强化学习全称是 Deep Reinforcement Learning（DRL），其所带来的推理能力 是智能的一个关键特征衡量，真正的让机器有了自我学习、自我思考的能力。
+					
+					深度强化学习(Deep Reinforcement Learning，DRL)本质上属于\textit{采用神经网络作为值函数估计器的一类方法，其主要优势在于它能够利用深度神经网络对状态特征进行自动抽取，避免了人工 定义状态特征带来的不准确性，使得Agent能够在更原始的状态上进行学习}。
+				
+	
+	\section{视频游戏的AI史}
+		\url{https://www.gameres.com/853687.html}
+		
+		\subsection{Fine State Machine}
+		
+		\subsection{Monte Calor Search Tree}
+		
+		\subsection{Behavioral Decision Trees}
+		
+		
+		
+\chapter{监督学习}
+
+
+
+\chapter{非监督学习}
+
+
+
+\chapter{迁移学习}
+
+
+
+\chapter{强化学习}
+	\section{参考}
+		知乎专栏：\url{https://zhuanlan.zhihu.com/p/25498081}
+		
+		博客：\url{https://www.cnblogs.com/jinxulin/p/3517377.html}
+		
+		Towards Data: \url{https://towardsdatascience.com/understanding-markov-decision-processes-b5862c192ddb}
+		
+		通过例子了解强化学习：\url{http://www.sohu.com/a/228536039_129720} + \\ \url{https://www.freecodecamp.org/news/diving-deeper-into-reinforcement-learning-with-q-learning-c18d0db58efe/}
+		
+	\section{基本概念}
+	
+	\section{MDP-马尔可夫决策}
+		\subsection{马尔科夫性}
+			马尔科夫性是指系统的下一个状态$s_{t+1}$仅与当前状态$s_t$有关，而与以前的状态无关。
+			
+			定义：状态$s_t$是马尔科夫的，当且仅当$P[S_{t+1}|s_t] = P[s_{t+1}|s_1,...,s_t]$。
+			
+			定义中可以看到，当前状态$s_t$其实是蕴含了所有相关的历史信息$s_1,...,s_t$，一旦当前状态已知，历史信息将会被抛弃。
+			
+		\subsection{马尔科夫过程}
+			马尔科夫性描述的是\textbf{每个状态的性质}，但真正有用的是如何描述\textbf{一个状态序列}。数学中用来描述\textbf{随机变量序列}的学科叫\textbf{随机过程}。所谓随机过程就是指随机变量序列。
+			
+			若随机变量序列中的每个状态都是马尔科夫的则称此随机过程为马尔科夫随机过程。
+			
+			马尔科夫过程的定义：马尔科夫过程是一个二元组$(S,P)$，且满足：$S$是有限状态集合， $P$是状态转移概率。状态转移概率矩阵为：
+			$$
+				P = \left[
+							\begin{array}{ccc}
+								\mathbf{P_{11}} & \cdots & \mathbf{P_{1n}}\\
+								
+								\vdots & \vdots & \vdots\\
+								
+								\mathbf{P_{n1}} & \cdots & \mathbf{P_{nn}}\\
+							\end{array}
+					\right]
+			$$
+			
+			\paragraph{示例}
+				一个学生的7种\textbf{状态}{娱乐，课程1，课程2， 课程3，考过，睡觉，论文}，每种\textit{状态之间}有一定的\textbf{转换概率}。具体如下图所示。
+				
+				\begin{figure}[H]
+					\centering
+					\includegraphics[width=.6\linewidth]{MDP-example}
+					\caption{马尔可夫决策示例}
+				\end{figure}
+				
+				以上状态序列称为马尔科夫链。当给定状态转移概率时，从某个状态出发存在多条\textbf{马尔科夫链}。对于游戏或者机器人，马尔科夫过程不足以描述其特点，因为不管是游戏还是机器人，他们都是通过动作与环境进行交互，并从环境中获得奖励，\textbf{而马尔科夫过程中不存在动作和奖励}。\textbf{将动作（策略）和回报考虑在内的马尔科夫过程称为马尔科夫决策过程}。
+				
+		\subsection{马尔科夫决策过程}
+		
+			\paragraph{基本组成}
+			基本组成：五元组 $M=(S,A,P,\gamma,R)$.
+								
+			\begin{itemize}[itemindent = 1em]
+				\item \textbf{S}: 表示状态集(states)，有$s \in S$，$s_i$表示第i步的状态。
+				
+				\item \textbf{A}: 表示一组动作(actions)，有$a \in A$，$a_i$表示第i步的动作,由状态与策略函数$\pi$ 决定。
+				
+				\item \textbf{P}: 表示状态转移概率。$s$ 表示的是在当前$s \in S$状态下，经过$a \in A$作用后，会转移到的其他状态的\textbf{概率分布情况}。比如，在状态s下执行动作a，转移到s'的概率可以表示为 $p(s'|s,a)$。
+				
+				\item \textbf{R}: $S \times A->\mathbb{R}$，R是回报函数(reward function)。有些回报函数状态S的函数，可以简化为$R:S->\mathbb{R}$。如果一组$(s,a)$转移到了下个状态$s'$，那么回报函数可记为$r(s'|s, a)$。如果 $(s,a)$ 对应的下个状态s'是唯一的，那么回报函数也可以记为$r(s,a)$。
+				
+				\item $\mathbf{\gamma}$ :折现因子：对未来的价值抱有的希望参数，取值在$[0,1]$
+			\end{itemize}
+			
+			
+			\paragraph{状态转移策略$\pi(s)$}	
+				马尔科夫决策过程的状态转移概率是包含动作的:
+				$$ P_{ss1}^a = P[S_{t+1} = s1 | S_t = s, A_t = a]$$
+				
+				\begin{figure}[H]
+					\centering
+					\includegraphics[width=.6\linewidth]{MDP-example2}
+					\caption{马尔可夫决策过程示例}
+				\end{figure}			
+				
+				学生有五个状态，状态集为$S = {s_1, s_2, s_3, s_4, s_5}$，动作集为$A={\textit{玩}，\textit{退出}，\textit{学习}，\textit{发论文}，\textit{睡觉}}$，在上图中\textbf{立即回报}$R$用红色标记。
+				
+				强化学习的\textbf{目标}是给定一个马尔科夫决策过程，\textbf{寻找最优策略}。所谓\textit{策略是指状态到动作的映射}，策略常用符号$\pi$表示，它是指给定状态$s$时，动作集上的一个分布，即
+				
+				\begin{equation}
+					\pi(a|s) = p[A_t = a_t | S_t = s]
+				\end{equation}
+				
+				策略的定义是用条件概率分布给出的。策略$\pi$在每个状态$s$指定一个动作概率。如果给出的策略$\pi$是确定性的，那么策略$\pi$在每个状态$s$指定一个确定的动作。
+				
+				例如其中一个学生的策略为$\pi_1(\textit{玩}|s_1) = 0.8$，是指该学生在状态$s_1$时玩的概率为0.8，不玩的概率是0.2，显然这个学生更喜欢玩。
+				
+				另外一个学生的策略为$\pi_2(\textit{玩}|s_1) = 0.3$，是指该学生在状态[公式]时玩的概率是0.3，显然这个学生不爱玩。依此类推，每学生都有自己的策略。
+			
+			\paragraph{累积回报$G_t(s)$}	
+				\textbf{强化学习是找到最优的策略，这里的最优是指得到的总回报最大。}
+				
+				当给定一个策略$\pi$时，就可以计算\textbf{累积回报}了。首先定义累积回报：
+				\begin{equation}
+					G_t = R_{t+1} + \gamma R_{t+2} + \cdots = \sum_{k=0}^\infty \gamma^k R_{t+k+1}
+				\end{equation}
+				
+				在策略$\pi$下，可以计算累积回报$G_1$，此时$G_1$有多个可能值 。\textbf{由于策略}$\pi$\textbf{是随机的，因此累积回报也是随机的}。\textit{为了评价状态}$s_1$\textit{的价值}，我们需要定义一个确定量来描述状态$s_1$的价值，很自然的想法是利用累积回报来衡量状态$s_1$的价值。然而，累积回报$G_1$是个随机变量，不是一个确定值，因此无法进行描述。\textbf{但其期望是个确定值，可以作为\underline{状态值函数}的定义。}
+				
+			
+			\paragraph{状态值函数$V_t(s)$}
+				累积回报$G$是个随机变量，不是一个确定值，因此\textbf{无法评价}状态$s$\textit{的价值}。但其期望是个确定值(\textbf{状态值}$v_\pi$)，可以作为评价依据。
+			
+				当Agent采用策略$\pi$时，累积回报服从一个分布，累积回报在状态$s$处的期望值定义为\textbf{状态-值函数}：
+				\begin{equation}
+					\begin{aligned}
+						v_\pi(s) &= E_\pi \left[\sum_{k=0}^{\infty}\gamma^k R_{t+k+1}|S_t = s \right]	\\
+							&= R_s + \gamma \sum_{s' \in S}P_{ss'}v(s')
+					\end{aligned}
+				\end{equation}
+				
+				\verb|-->|状态值函数是与策略$\pi$相对应的，这是因为策略$\pi$决定了累积回报$G$的状态分布.
+				
+				\begin{figure}[H] 
+					\centering
+					\includegraphics[width=.6\linewidth]{MDP-example3}
+					\caption{状态值函数示例}
+				\end{figure}		
+								
+				图中白色圆圈中的数值为该状态下的值函数。即：$v_\pi(s_1) = -2.3, v_\pi(s_2) = -1.3, v_\pi(s_3) = 2.7, v_\pi(s_4) = 7.4, v_\pi(s_5) = 0$
+				
+			\paragraph{状态-行为值函数$q_\pi(s,a)$}
+				相应地，状态-行为值函数为：
+				
+				\begin{equation}
+					\begin{aligned}
+					q_\pi(s,a) &= E_\pi \left[\sum_{k=0}^{\infty}\gamma^k R_{t+k+1}|S_t = s, A_t = a \right]\\
+							&= R_s^a + \gamma \sum_{s'\in S} P_{ss'}^a\sum_{a'\in A}\pi(a'|s')q_\pi(s', a')
+					\end{aligned}
+				\end{equation}
+				
+				推导见后文。		
+			
+			\paragraph{状态值函数与状态-行为值函数的贝尔曼方程}
+				由\textit{状态值函数}的定义式可以得到：
+				
+				\begin{equation}
+					\begin{aligned}
+						v(s) &= E[G_t|S_t = s]	\\
+							&= E[R_{t+1} + \gamma R_{t+2} + \cdots | S_t = s] \\
+							&= E[R_{t+1} + \gamma (R_{t+2} + \gamma R_{t+3} + \cdots)|S_t = s]\\
+							&= E[R_{t+1} + \gamma G(t+1)|S_t = s]	\\
+							&= E[R_{t+1} + \gamma E_{s_{t+1},\cdots}(G(S_{t+1}))]	\\
+							&= E[R_{t+1} + \gamma v(S_{t+1})|S_t = s]	\\
+							&= \textit{立即回报} + \textit{未来回报}
+					\end{aligned}
+				\end{equation}
+				
+				需要注意的是对哪些变量求期望。
+				
+				同样我们可以得到状态-动作值函数的贝尔曼方程：
+				
+				\begin{equation}
+					q_\pi(s,a) = E_\pi[R_{t+1} + \gamma q(S_{t+1},A_{t+1})|S_t = s, A_t = a]
+				\end{equation}
+				
+				
+				
+		\subsection{Q-learning 从案例到原理}	
+			\url{http://www.sohu.com/a/228536039_129720}
+			
+			\paragraph{Environment: Game}
+				\textit{the Knight and the Princess}
+				
+				\begin{figure}[H]
+					\centering
+					\includegraphics[width=.5\linewidth]{game01}
+				\end{figure}
+				
+				你每次可以移动一个方块的距离。敌人是不能移动的，但是如果你和敌人落在了同一个方块中，你就会死。你的目标是以尽可能快的路线走到城堡去。这可以使用一个「按步积分」系统来评估。
+				
+				\begin{itemize}
+					\item 你在每一步都会失去 1 分, rewardx = -1;
+					\item 如果碰到了一个敌人，你会失去 100 分，并且训练 episode 结束。 rewardEnemy = -100;
+					\item 如果进入到城堡中，你就获胜了，获得 100 分。 rewardPrincess = 100;
+				\end{itemize}
+				
+				
+			\paragraph{Q-table:MDP}
+				\subparagraph{Policy $\pi_1$}
+					第一个策略。假设智能体试图走遍每一个方块，并且将其着色。绿色代表\textbf{「安全」}，红色代表\textbf{「不安全」}。
+					
+					\begin{figure}[H]
+						\centering
+						\includegraphics[width=.5\linewidth]{policy01}
+					\end{figure}
+					
+					同样的地图，但是被着色了，用于显示哪些方块是可以被安全访问的。接着，我们告诉智能体只能选择绿色的方块。
+					
+					但问题是，这种策略并不是十分有用。当绿色的方块彼此相邻时，我们不知道选择哪个方块是最好的。所以，Agent\textit{可能会在寻找城堡的过程中陷入无限的循环}。
+					
+					
+				\subparagraph{Policy $\pi_2$}
+					第二种策略：创建一个表格。通过它，我们可以为每一个\textbf{状态（state）}上进行的每一个\textbf{动作（action）}计算出最大的未来\textbf{奖励（reward）的期望}。
+					
+					得益于这个表格，我们可以知道为每一个状态采取的最佳动作。
+					
+					每个状态（方块）允许四种可能的操作：左移、右移、上移、下移。
+					\begin{figure}[H]
+						\centering
+						\includegraphics[width=.5\linewidth]{policy02}
+					\end{figure}					
+					
+					
+					\textit{「0」代表不可能的移动}（如果你在左上角，你不可能向左移动或者向上移动！）
+					
+					在计算过程中，我们可以将这个网格转换成一个表。\textbf{这种表格被称为 Q-table（「Q」代表动作的「未来价值」）}。每一列将代表四个操作（左、右、上、下），行代表状态。每个单元格的值代表给定状态和相应动作的最大未来奖励期望。
+					\begin{figure}[H]
+						\centering
+						\includegraphics[width=.9\linewidth]{policy02_1}
+					\end{figure}
+					
+					将这个 Q-table 想象成一个「备忘纸条」游戏。得益于此，我们通过寻找每一行中最高的分数，可以知道对于每一个状态（Q-table 中的每一行）来说，可采取的最佳动作是什么。
+					这样就解决了这个城堡问题！但是，如何计算 Q-table 中每个元素的值呢？也就是MDP 中提到的BellManEquation。
+										
+			\paragraph{BellMan-Equation}
+				为了求出 Q-table 中的每个值，\textbf{将使用 Q-learning 算法}求解 BellMan Equation. 
+				
+				\subparagraph{Q-learning 算法：学习动作值函数}
+					\textit{动作-值函数}（或称\textit{「Q 函数」}）有两个输入：\textbf{「状态」}和\textbf{「动作」}。它将返回\textbf{在该状态下执行该动作的未来奖励期望}。
+					
+					\begin{figure}[H]
+						\centering
+						\includegraphics[width=\linewidth]{qFunc}
+					\end{figure}
+					
+					可以把 Q 函数视为一个在 Q-table 上滚动的读取器，用于寻找与当前状态关联的行以及与动作关联的列。\textbf{它会从相匹配的单元格中返回 Q 值。这就是未来奖励的期望}。
+					
+					在\textbf{探索环境（environment）之前}，Q-table 会给出相同的任意的设定值（大多数情况下是 0）。\textbf{随着对环境的持续探索}，这个 Q-table 会通过迭代地\textbf{使用 Bellman 方程（动态规划方程）更新 Q(s,a) 来给出越来越好的近似}。具体求解参考动态规范方法一节。
+					
+				\subparagraph{Q-learning 流程}
+					一般计算机模拟流程大概如下：
+					
+					\begin{figure}[H]
+						\centering
+						\includegraphics[width=.4\linewidth]{qFuncProcess}
+						\includegraphics[width=\linewidth]{qFuncProcess2}
+					\end{figure}
+				
+				
+					\begin{itemize}
+						\item \textbf{Step 1: Initialize Q-values}
+						
+							初始化 Q 值。我们构造了一个\textit{ m 列（m = 动作数 )，n 行（n = 状态数）}的 Q-table，并将其中的值\textbf{初始化为 0}。
+							
+							\begin{figure}[H]
+								\centering
+								\includegraphics[width=.4\linewidth]{qFuncProcess01}
+							\end{figure}
+							
+						\item \textbf{Step 2: For life (or until learning is stopped)}
+							
+							在整个生命周期中（或者直到训练被中止前），步骤 3 到步骤 5 会一直被重复，直到达到了最大的训练次数（由用户指定）或者手动中止训练。
+							
+						\item \textbf{Step 3: Choose an action}
+						
+							选取一个动作。在基于当前的 Q 值估计得出的状态 s 下选择一个动作 a。
+							
+							但是……如果每个 Q 值都等于零，我们一开始该选择什么动作呢？ 请转到\textbf{$\epsilon$ epsilon 探索/利用 比率} 小节。
+						
+						\item \textbf{Step 4–5: Evaluate!}
+						
+							评价！采用动作 a 并且观察输出的状态 s' 和奖励 r。现在我们更新函数 Q（s，a）。
+							
+							我们采用在步骤 3 中选择的动作 a，然后执行这个动作会返回一个新的状态 s' 和奖励 r。接着我们使用 Bellman 方程去更新 Q（s，a）：
+							\begin{figure}[H]
+								\centering
+								\includegraphics[width=.9\linewidth]{qFuncProcess02}
+							\end{figure}	
+							
+							\begin{lstlisting}
+New Q value = Current Q value + lr * [Reward + discount_rate * (highest Q value between possible actions from the new state s’ ) — Current Q value]							
+							\end{lstlisting}						
+							
+					\end{itemize}
+				
+			\paragraph{Dynamic Solve}
+
+			
+			\paragraph{$\alpha$ 学习率}
+				可以将学习率看作是网络\textbf{有多快地抛弃旧值、生成新值的度量}。如果学习率是 1，新的估计值会成为新的 Q 值，并完全抛弃旧值。
+			
+			\paragraph{$\epsilon$ epsilon 探索/利用 比率}
+				在刚开始初始化后，每个 Q 值都等于零，一开始该选择什么动作呢？在这里，就可以看到\textbf{探索/利用}\textbf{（exploration/exploitation）}的权衡有多重要了。
+			
+				思路就是，在一开始，将使用 \textbf{epsilon 贪婪策略}：
+				
+				\begin{enumerate}[itemindent = 1em]
+					\item 指定一个\textbf{探索速率「epsilon」}，一开始将它设定为 1。这个就是我们将随机采用的步长。在一开始，这个速率应该处于最大值，因为我们不知道 Q-table 中任何的值。这意味着，我们需要通过随机选择动作进行大量的探索。
+					\item \textit{生成一个随机数}。如果\textbf{这个数大于 epsilon，那么我们将会进行「利用」}（这意味着我们在每一步利用已经知道的信息选择动作）。否则，我们将继续进行探索。
+					\item 在刚开始训练 Q 函数时，我们必须有一个大的 epsilon。随着智能体对估算出的 Q 值更有把握，我们将逐渐减小 epsilon。
+				\end{enumerate}
+				
+				\begin{figure}[H]
+					\centering
+					\includegraphics[width=\linewidth]{epsilon}
+				\end{figure}
+	
+	
+		\subsection{Q-learning 案例示例}
+		
+			\paragraph{Environment}
+				老鼠奶酪游戏。
+				
+				\begin{figure}[H]
+					\centering
+					\includegraphics[width=.4\linewidth]{qExample}
+				\end{figure}
+			
+				\begin{itemize}
+					\item 一块奶酪 = +1
+					\item 两块奶酪 = +2
+					\item 一大堆奶酪 = +10（训练结束）
+					\item 吃到了鼠药 = -10（训练结束）
+				\end{itemize}
+			
+			
+			\paragraph{Step1：初始化 Q-table}
+				初始化
+				
+				\begin{figure}[H]
+					\centering
+					\includegraphics[width=.7\linewidth]{qExample01}
+				\end{figure}
+			
+			\paragraph{Step2、3：选择一个动作}
+				从起始点，你可以在向右走和向下走其中选择一个。由于有一个\textbf{大的 epsilon 速率}（因为我们至今对于环境一无所知），我们随机地选择一个。例如向右走。
+				\begin{figure}[H]
+					\centering
+					\includegraphics[width=.4\linewidth]{qExample02}
+					\includegraphics[width=.7\linewidth]{qExample03}
+				\end{figure}			
+				
+				我们随机移动（例如向右走）
+				
+				我们发现了一块奶酪（+1），现在我们可以更新开始时的 Q 值并且向右走，通过 Bellman 方程实现。
+				
+			\paragraph{Step4、5：更新Q 函数}
+				更新 Q 函数
+				\begin{figure}[H]
+					\centering
+					\includegraphics[width=.95\linewidth]{qExample04}
+					\includegraphics[width=.96\linewidth]{qExample05}
+				\end{figure}					
+				
+				\begin{itemize}
+					\item 首先，我们计算 Q 值的改变量$\Delta Q(start, right)$。
+					\item 接着我们将初始的 Q 值与$\Delta Q(start, right)$和学习率$\alpha$的积相加。
+				\end{itemize}
+				
+				\begin{figure}[H]
+					\centering
+					\includegraphics[width=.7\linewidth]{qExample06}
+				\end{figure}
+				
+				刚刚更新了第一个 Q 值。现在我们要做的就是\textbf{一次又一次地做这个工作直到学习结束}。
+				
+						
+	\section{Q-Learning}
+	
+	\section{Saras}
+	
+	\section{Deep-Q-Network}
+		
+
+\chapter{案例分析}
+
+
+\chapter{应用}
+
+
+
+  
+		    
+\end{document} 
+ 		    
