@@ -119,7 +119,7 @@
 				
 				加入设计的线性关系类似于 $ y = f(x) = wx + b$, 则训练函数类似于
 				
-				$$ Loss = \Sigma_{i=1}^{n}|wx_i + b - y_i|$$		
+				$$ Loss = \sum_{i=1}^{n}|wx_i + b - y_i|$$		
 		
 		
 		\subsection{迁移学习}
@@ -236,6 +236,15 @@
 		
 		\subsection{Behavioral Decision Trees}
 		
+
+\chapter{练习环境框架}
+
+	\section{Keras}
+
+	\section{Tensorflow}
+	
+	\section{PyTorch}
+		
 		
 		
 \chapter{监督学习}
@@ -245,12 +254,10 @@
 \chapter{非监督学习}
 
 
-
 \chapter{迁移学习}
 
 
-
-\chapter{强化学习}
+\chapter{强化学习-D·Silver}
 	\section{参考}
 		知乎专栏：\url{https://zhuanlan.zhihu.com/p/25498081}
 		
@@ -260,10 +267,52 @@
 		
 		通过例子了解强化学习：\url{http://www.sohu.com/a/228536039_129720} + \\ \url{https://www.freecodecamp.org/news/diving-deeper-into-reinforcement-learning-with-q-learning-c18d0db58efe/}
 		
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=.9\linewidth]{MDPs}
+		\end{figure}
+		
+		
 	\section{基本概念}
+		\subsection{ModelFree 与 ModelBased}
+			model-free是指agent对环境不了解， model-based指agent对环境了解。
+				
 	
+		\subsection{Policy-Based 与  Value-Based}
+			\begin{figure}[H]
+				\centering
+				\includegraphics[width=.8\linewidth]{PolicyWithValue}
+			\end{figure}
+			
+			基于概率的话，有几率选到概率比较小的action. 基于价值的话，永远选value最大的动作。另外基于价值的无法在连续动作过程中实现。
+		
+			在基于概率这边, 有 Policy Gradients, 在基于价值这边有 Q learning, Sarsa 等. 而且我们还能结合这两类方法的优势之处, 创造更牛逼的一种方法, 叫做 Actor-Critic, actor 会基于概率做出动作, 而 critic 会对做出的动作给出动作的价值, 这样就在原有的 policy gradients 上加速了学习过程.
+			
+		\subsection{OnPolicy  与 OffPolicy}
+			\begin{figure}[H]
+				\centering
+				\includegraphics[width=.8\linewidth]{OnOffPolicy}
+			\end{figure}
+
+			在线学习, 就是指我必须本人在场, 并且一定是本人边玩边学习。而离线学习是你可以选择自己玩, 也可以选择看着别人玩, 通过看别人玩来学习别人的行为准则。
+			
+			在线学习有Sarsa, Sarsa lambda, 最典型的离线学习就是 Q learning, Deep-Q-Network.
+			
+		\subsection{单步更新 与  回合更新}
+			\begin{figure}[H]
+				\centering
+				\includegraphics[width=.8\linewidth]{stepWithLoop}
+			\end{figure}
+		
+			回合更新指的是游戏开始后, 我们要等待游戏结束, 然后再总结这一回合中的所有转折点, 再更新我们的行为准则. 而单步更新则是在游戏进行中每一步都在更新, 不用等待游戏的结束, 这样我们就能边玩边学习了.
+			
+			再来说说方法, Monte-carlo learning 和基础版的 policy gradients 等 都是回合更新制, Qlearning, Sarsa, 升级版的 policy gradients 等都是单步更新制. 因为单步更新更有效率, 所以现在大多方法都是基于单步更新. 
+	
+		\subsection{强化学习的解法的通用框架}
+			有限马尔科夫状态（finite MDP）包含有限的状态集和动作集。大多数强化学习的理论或算法都需要马尔科夫过程的前提限制，但是其思想具有广泛通用性。
+		
 	\section{MDP-马尔可夫决策}
-		\subsection{马尔科夫性}
+		\subsection{马尔科夫性质}
 			马尔科夫性是指系统的下一个状态$s_{t+1}$仅与当前状态$s_t$有关，而与以前的状态无关。
 			
 			定义：状态$s_t$是马尔科夫的，当且仅当$P[S_{t+1}|s_t] = P[s_{t+1}|s_1,...,s_t]$。
@@ -293,7 +342,7 @@
 				
 				\begin{figure}[H]
 					\centering
-					\includegraphics[width=.6\linewidth]{MDP-example}
+					\includegraphics[width=.9\linewidth]{MDP-example}
 					\caption{马尔可夫决策示例}
 				\end{figure}
 				
@@ -313,21 +362,26 @@
 				
 				\item \textbf{R}: $S \times A->\mathbb{R}$，R是回报函数(reward function)。有些回报函数状态S的函数，可以简化为$R:S->\mathbb{R}$。如果一组$(s,a)$转移到了下个状态$s'$，那么回报函数可记为$r(s'|s, a)$。如果 $(s,a)$ 对应的下个状态s'是唯一的，那么回报函数也可以记为$r(s,a)$。
 				
+				\textit{回报函数}可以看成是一个映射，关于当前的动作，或者当前环境和当前动作的pair的好不好的一个评价。\textbf{属于立即评价，只考虑当前这一步的好坏}。
+				
 				\item $\mathbf{\gamma}$ :折现因子：对未来的价值抱有的希望参数，取值在$[0,1]$
 			\end{itemize}
 			
 			
 			\paragraph{状态转移策略$\pi(s)$}	
+				policy --在当前环境的基础上，引入动作Action，并将环境和动作之间添加一种映射，\textbf{某种环境下最应该做什么动作呢？这个是由policy决定的}。policy的所有可能组成一个policy空间，强化学习的目的，就是在这个巨大的空间中，学习到某一种最优的policy。
+			
+			
 				马尔科夫决策过程的状态转移概率是包含动作的:
 				$$ P_{ss1}^a = P[S_{t+1} = s1 | S_t = s, A_t = a]$$
 				
 				\begin{figure}[H]
 					\centering
-					\includegraphics[width=.6\linewidth]{MDP-example2}
+					\includegraphics[width=.7\linewidth]{MDP-example2}
 					\caption{马尔可夫决策过程示例}
 				\end{figure}			
 				
-				学生有五个状态，状态集为$S = {s_1, s_2, s_3, s_4, s_5}$，动作集为$A={\textit{玩}，\textit{退出}，\textit{学习}，\textit{发论文}，\textit{睡觉}}$，在上图中\textbf{立即回报}$R$用红色标记。
+				学生有五个状态，状态集为$S = {s_1, s_2, s_3, s_4, s_5}$，动作集为$A={\textit{玩}，\textit{退出}，\textit{学习}，\textit{发论文}，\textit{睡觉}}$，在上图中$R$表示\textbf{立即回报}。
 				
 				强化学习的\textbf{目标}是给定一个马尔科夫决策过程，\textbf{寻找最优策略}。所谓\textit{策略是指状态到动作的映射}，策略常用符号$\pi$表示，它是指给定状态$s$时，动作集上的一个分布，即
 				
@@ -342,39 +396,72 @@
 				另外一个学生的策略为$\pi_2(\textit{玩}|s_1) = 0.3$，是指该学生在状态[公式]时玩的概率是0.3，显然这个学生不爱玩。依此类推，每学生都有自己的策略。
 			
 			\paragraph{累积回报$G_t(s)$}	
+				和上面的\textit{reward function}对比着看，这一步考虑的是当前环境状态的\textbf{长远优势}，也就是\textbf{以当前状态为起点，以后的多个时间点之后的各个状态的reward之和}。如何更好的估计这个值，是几乎所有增强学习问题的解决重点和难点。这个也是如何评定一个policy好坏的标准。
+			
 				\textbf{强化学习是找到最优的策略，这里的最优是指得到的总回报最大。}
 				
-				当给定一个策略$\pi$时，就可以计算\textbf{累积回报}了。首先定义累积回报：
+				当给定一个策略$\pi$时，就可以计算\textbf{累积回报}了。首先定义\textbf{累积回报}：
 				\begin{equation}
 					G_t = R_{t+1} + \gamma R_{t+2} + \cdots = \sum_{k=0}^\infty \gamma^k R_{t+k+1}
 				\end{equation}
 				
+				注意：这里某个时间点上的$G_t$，也就是\textbf{期望返回值}，是从该时间点往后所有获取的reward序列和.
+				
+				\verb|discounting rate| $\gamma \in [0,1]$: 决定了未来奖励的当前价值.
+				
+				\verb|discounting rate| 的含义就是，在当前时间点k步之后的奖励，在当前的价值是未来的$\gamma^{k-1}$倍。当该系数小于1，最终和会收敛，只要奖励序列是有限的。当系数为0，则执行机构是短视的，只顾眼前利益；如果系数大于1，执行机构是远视的，也就是重视长远奖励。
+				
 				在策略$\pi$下，可以计算累积回报$G_1$，此时$G_1$有多个可能值 。\textbf{由于策略}$\pi$\textbf{是随机的，因此累积回报也是随机的}。\textit{为了评价状态}$s_1$\textit{的价值}，我们需要定义一个确定量来描述状态$s_1$的价值，很自然的想法是利用累积回报来衡量状态$s_1$的价值。然而，累积回报$G_1$是个随机变量，不是一个确定值，因此无法进行描述。\textbf{但其期望是个确定值，可以作为\underline{状态值函数}的定义。}
 				
 			
-			\paragraph{状态值函数$V_t(s)$}
+			\paragraph{状态-价值函数$V_t(s)$}
+			
 				累积回报$G$是个随机变量，不是一个确定值，因此\textbf{无法评价}状态$s$\textit{的价值}。但其期望是个确定值(\textbf{状态值}$v_\pi$)，可以作为评价依据。
 			
 				当Agent采用策略$\pi$时，累积回报服从一个分布，累积回报在状态$s$处的期望值定义为\textbf{状态-值函数}：
 				\begin{equation}
 					\begin{aligned}
 						v_\pi(s) &= E_\pi \left[\sum_{k=0}^{\infty}\gamma^k R_{t+k+1}|S_t = s \right]	\\
-							&= R_s + \gamma \sum_{s' \in S}P_{ss'}v(s')
+							&= R_s + \gamma \sum_{s' \in S}P_{ss'}v(s') \\
+							&= \textit{立即回报} + \textit{未来回报}
 					\end{aligned}
 				\end{equation}
 				
 				\verb|-->|状态值函数是与策略$\pi$相对应的，这是因为策略$\pi$决定了累积回报$G$的状态分布.
+			
+			\paragraph{动作:价值函数$q(a)$}
+				把每个action的真实value定义为$q_*(a)$，把每个action在第t个时间步下的估计值定义为$q_t(a)$。
 				
-				\begin{figure}[H] 
-					\centering
-					\includegraphics[width=.6\linewidth]{MDP-example3}
-					\caption{状态值函数示例}
-				\end{figure}		
-								
-				图中白色圆圈中的数值为该状态下的值函数。即：$v_\pi(s_1) = -2.3, v_\pi(s_2) = -1.3, v_\pi(s_3) = 2.7, v_\pi(s_4) = 7.4, v_\pi(s_5) = 0$
+				每个action的真实value，是当该动作被选择时所获得的期望reward，在这里，自然想到用最简洁的历史平均reward来表示当前动作的value估计值。假定某个action在t时间前总共被选择了$k_\alpha$次，于是我们的估计值如下式：
+			
+				$$q_t(a) = \dfrac{R_1 + R_2 + \cdots + R_{k_\alpha}}{t}$$
 				
-			\paragraph{状态-行为值函数$q_\pi(s,a)$}
-				相应地，状态-行为值函数为：
+				这个方法叫做sample-average，因为每个动作的estimated value都是依据过往sample reward的平均值进行计算的。当$k_\alpha$等于0,我们可以把定义为一个默认的初始值，当$k_\alpha$趋近无穷，则最终收敛于$q_*(a)$。当然这个estimate的方法不一定是最好的,只是为了说明问题而已。
+				
+				可以发现，为了算在t时间的action a的value estimation，我们需要t时间之前所有时间该动作的reward记录。随着时间增加，这种计算方式涉及的计算复杂度和存储压力都会增加。
+				
+				其实这是不必要的，我们完全可以用另一种方式来计算$q_t(a)$。推导如下：
+				
+				$$\begin{aligned}
+				Q_{n+1} &= \frac{1}{n}\sum_{i=1}^{n}R_i \\
+				        &= \frac{1}{n}(R_n + \sum_{i=1}^{n-1}R_i) \\
+				        &= \frac{1}{n}(R_n + (n-1)\frac{1}{n-1} \sum_{i=1}^{n-1}R_i) \\
+				        &= \frac{1}{n}(R_n + (n-1)Q_n) \\
+				        &= \frac{1}{n}(R_n + nQ_n-Q_n) \\
+				        &= Q_n + \frac{1}{n}(R_n - Q_n)
+				\end{aligned}
+				$$
+				
+				用这个形式的迭代公式，只需要保存$q_k(a)$和$k$，再加上一点简单的加减运算，就可以快速得到$q_{k+1}(a)$, 这个形式的写法贯穿于全文。
+				
+				
+				$$ newEstimate \gets oldEstimate + stepSize(target - oldEstimate)$$
+				
+				$target-oldEstimate$ 是 $estimate$ 的error，乘以stepsize是\textbf{不断地减小这个error，逼近target}。
+				
+				
+			\paragraph{状态-行为:价值函数$q_\pi(s,a)$}
+				相应地，状态-行为 \textit{价值函数}为：
 				
 				\begin{equation}
 					\begin{aligned}
@@ -383,9 +470,37 @@
 					\end{aligned}
 				\end{equation}
 				
-				推导见后文。		
+				因为引入了动作策略，因而在每一个状态下策略$\pi$ 都会有该状态下会发生动作的概率分布空间，而每种动作都可能导致不同的后续状态。具体关联如下所示：
+				
+				\begin{figure}[H]
+					\centering
+					\includegraphics[width=.7\linewidth]{qV}
+					\includegraphics[width=.8\linewidth]{qV01}
+					\includegraphics[width=.8\linewidth]{qV02}
+					\includegraphics[width=.6\linewidth]{qV03}
+					\includegraphics[width=.6\linewidth]{qV04}
+					\caption{状态与动作的关联示例}
+					\label{q(a,s)}
+				\end{figure}
+				
+				其中空心表示状态,实心表示某状态下可能产生的动作分布。
+				
+				从状态 $s$ 开始，顶部的根节点，个体可以采取基于其策略 $\pi$ 的任何一组动作，图中显示了三个。 这些动作中的每一个，环境可以响应下一个状态中的其中一个，$s′$ （图中显示两个）， 以及奖励 $r$，取决于函数 $p$ 给出的动态。
+				
+				\begin{figure}[H] 
+					\centering
+					\includegraphics[width=.8\linewidth]{MDP-example3}
+					\caption{状态值函数示例}
+				\end{figure}		
+								
+				图中白色圆圈中的数值为该状态下的值函数。即：$v_\pi(s_1) = -2.3, v_\pi(s_2) = -1.3, v_\pi(s_3) = 2.7, v_\pi(s_4) = 7.4, v_\pi(s_5) = 0$			
+				
+				\verb|-->Notice:|图中，除了pub 这个动作外，其余各状态也可以看成是执行了某动作，但是其通往某状态的概率为1. 既$s \to a \to s'$ 过程中，$a \to s'$ 的概率始终为1，所以不存在其他分支， 因而没有画中间类似于pub 的动作与状态的关联图。	
 			
-			\paragraph{状态值函数与状态-行为值函数的贝尔曼方程}
+			\paragraph{状态:价值函数与状态-行为:价值函数的贝尔曼方程}
+				
+				贝尔曼方程对上述图\ref{q(a,s)}中$s \to s'$所有可能性进行平均，通过其发生概率对每个可能性进行加权。 它指出，开始状态的值必须等于预期的\textbf{下一个状态的（衰减）值}，加上\textbf{沿途预期的奖励}。
+			
 				由\textit{状态值函数}的定义式可以得到：
 				
 				\begin{equation}
@@ -409,7 +524,201 @@
 				\end{equation}
 				
 				
+			
+			\paragraph{最优:价值函数}
+				可以通过以下方式精确地定义一个最优策略。价值函数对策略进行部分排序。 如果策略$\pi$所有状态的预期返回值大于或等于策略$\pi'$的值， 则该策略 $\pi$被定义为优于或等于策略 $\pi'$。 换句话说，对所有 $s \in S$, 当且仅当$v_\pi(s)\ge v_{\pi^{^\prime}}(s)$时，$\pi\ge\pi^\prime$ 成立。 总是至少有一个策略优于或等于所有其他策略。这个策略称为 最优策略。 虽然可能有不止一个，我们用 $\pi_*$ 表示所有最优策略。 它们共享同样的状态值函数，称为 最优状态价值函数，表示为 $v_∗$，并定义为
+			
+				$$ v_*(s) \doteq \max_\pi v_\pi(s) $$
 				
+			\paragraph{最优动作:价值函数}
+				最优策略还具有相同的最优动作价值函数，表示为 $q_∗$，并定义为
+				
+				$$q_*(s,a) \doteq \max_\pi q_\pi(s,a)$$
+				
+				对所有 $s \in S$和 $a \in A(s)$. 对于状态—动作对$(s,a)$，此函数给出在状态 $s$ 中执行动作 $a$ 并且此后遵循最优策略的预期返回值。 因此，我们可以用 $v_∗$ 来表示 $q_∗$ ，如下所示：
+				
+				$$q_*(s,a) = \mathbb{E}\left[R_{t+1}+\gamma v_* (S_{t+1})|S_t=s,A_t=a\right]$$
+			
+			
+			\paragraph{最优BellMan 方程}
+				贝尔曼最优方程式表达了这样一个事实，即最优策略下的状态价值必须等于来自该状态的最佳行动的预期收益：
+			
+				$$\begin{aligned}
+				v_*(s) &= \max_{a\in\mathcal{A}(s)} q_{\pi_*}(s,a) \\
+				&=\max_a \mathbb{E}_{\pi_*}[G_t|S_t=s,A_t=a] \\
+				&=\max_a \mathbb{E}_{\pi_*}[R_{t+1}+\gamma G_{t+1}|S_t=s,A_t=a]  \\
+				&=\max_a \mathbb{E}[R_{t+1}+\gamma v_*(S_{t+1})|S_t=s,A_t=a] \\
+				&=\max_{a\in \mathcal{A}(s)}\sum_{s^\prime,r} p(s^\prime,r|s,a)[r+\gamma v_*(s^\prime)]
+				\end{aligned}$$
+						
+				最后两个方程是 $v_∗$ 的贝尔曼最优方程的两种形式，$q_∗$ 的贝尔曼最优方程为	
+				
+				$$
+				\begin{aligned}
+				q_*(s,a) &= \mathbb{E}\left[R_{t+1}+\gamma\sum_{a^\prime}q_*(S_{t+1,a^\prime})|S_t=s,A_t=a\right] \\
+				&=\sum_{s^\prime,r}p(s^\prime,r|s,a)[r+\gamma \sum_{a^\prime}q_*(s^\prime,a^\prime)]
+				\end{aligned}$$	
+				
+				与上述状态-行为 价值函数相似的关联如下所示：
+				
+				\begin{figure}[H]
+					\centering
+					\includegraphics[width=\linewidth]{qVStar}
+					\includegraphics[width=.7\linewidth]{qVStar01}
+					\includegraphics[width=.7\linewidth]{qVStar02}
+				\end{figure}
+				
+				\begin{figure}[H]
+					\centering
+					\includegraphics[width=\linewidth]{qVStar03}
+				\end{figure}
+	
+	
+		\subsection{总结}
+			
+			\begin{table}[H]
+				\centering
+				\caption{MDP 相关概念}
+				\begin{tabular}{p{4cm}|p{11.5cm}}
+					\toprule
+					关键点  &  定义		\\
+					\midrule
+					状态转移矩阵	&	$ P_{ss'}^a = P[S_{t+1} = s1 | S_t = s, A_t = a]$ 分布	\\
+					\hline
+					Reward Function	&	$R_s^a = E[R_{t+1}|S_t = s, A_t = a]$  固定，不是随机变量				\\
+					\hline
+					Policy		&	$\pi(a|s) = P[A_t = a| S_t = s]$ 分布	\\
+					\hline
+					Return		& $G_t = R_{t+1} + \gamma R_{t+2} + \cdots = \sum_{k=0}^\infty \gamma^k R_{t+k+1}$		\\
+					\hline
+					state-value function	&	$V_\pi(s) = E_\pi[G_t | S_t = s]$	\\
+					\hline
+					action-value function 	&	$Q_\pi(s,a) = E_\pi[G_t | S_t = s, A_t = a]$	\\
+					\hline
+					Expectation Equation \textbf{For Predict}	&	$ \begin{cases}
+						v_\pi(s) =  R_s + \gamma \sum_{s' \in S}P_{ss'}v(s')  \textit{     加权平均-下同}	\\
+						q_\pi(s,a) = R_s^a + \gamma \sum_{s'\in S} P_{ss'}^a\sum_{a'\in A}\pi(a'|s')q_\pi(s', a')
+					\end{cases}$	\\
+					\hline
+					Optimal Equation \textbf{For Control}&	$ \begin{cases}
+											v_*(s) = Max( R_s + \gamma \sum_{s' \in S}P_{ss'}v(s') ) \textit{     加权平均取最大值-下同}	\\
+											q_*(s,a) =Max( R_s^a + \gamma \sum_{s'\in S} P_{ss'}^a\sum_{a'\in A}\pi(a'|s')q_*(s', a') )
+										\end{cases}$	\\					
+					\bottomrule
+				\end{tabular}
+			\end{table}
+		
+		
+		
+		
+	\section{Model-Based 动态规划}
+		当有了一个可以完美模拟马尔可夫过程的模型之后，\textbf{如何计算最优policies}?。(\textit{注意是policies，表明最优的策略可能不止一个})。
+		
+		\subsection{prediction-评估一个策略}
+			首先考虑给定任意策略$\pi$怎样计算状态值函数$v_\pi$。 这在DP文献中被称作 \textbf{策略评估}、或者Prediction。
+		
+		\subsection{control-找到最优策略}
+			\subsubsection{ - Policy iteration- }
+				等若干步迭代 再greedy 更新一次.
+				
+				计算某个策略价值函数的目的是找到一个更好的策略。假设我们已经确定了一个任意确定性的策略$\pi$价值函数 $v_\pi$。 对于某些状态 $s$ 我们想知道是否应该改变策略来明确的选择一个动作 $a ≠ \pi(s)$。 
+				
+				我们知道在当前状态 $s$ 遵从当前的策略有多好——>也就是 $v_\pi(s)$——但是改变为一个新的状态会更好还是坏呢？ 一种解决这个问题的方法是考虑从状态 s 下选择动作 a，然后遵从现有的策略 $\pi$。
+			
+				
+				\begin{figure}[H]
+					\centering
+					\includegraphics[width=.75\linewidth]{dp00}
+				\end{figure}
+			
+
+				一旦策略 $\pi$，已经用 $v_\pi$ 提升为更好的策略 $\pi'$， 我们可以计算 $v_\pi'$ 再次提升策略得到更好的策略 $\pi''$。 我们可以得到一系列单调提升的策略和价值函数：
+				
+				$$ \pi_0 \overset{E}{\rightarrow} v_{\pi_0} \overset{I}{\rightarrow} \pi_1 \overset{E}{\rightarrow} v_{\pi_1} \overset{I}{\rightarrow} \pi_2 \overset{E}{\rightarrow} \cdots \overset{I}{\rightarrow} \pi_* \overset{E}{\rightarrow} v_{*} $$
+				
+			
+				\begin{figure}[H]
+					\centering
+					\includegraphics[width=.75\linewidth]{dp01}
+				\end{figure}			
+			
+			\subsubsection{- Value iteration- }
+				每一步迭代 都greedy 更新一次
+				
+				\begin{figure}[H]
+					\centering
+					\includegraphics[width=\linewidth]{valueIteration2}
+				\end{figure}
+				
+				\begin{lstlisting}
+	import numpy as np
+	from gridworld import GridworldEnv
+
+	env = GridworldEnv()
+	 
+	def value_iteration(env, theta=0.0001, discount_factor=1.0):
+	    def one_step_lookahead(state, V):
+	        A = np.zeros(env.nA)
+	        for a in range(env.nA):
+	            for prob, next_state, reward, done in env.P[state][a]:
+	                A[a] += prob * (reward + discount_factor * V[next_state])
+	        return A
+	     
+	    V = np.zeros(env.nS)
+	    while True:
+	        # Stopping condition
+	        delta = 0
+	        # Update each state...
+	        for s in range(env.nS):
+	            # Do a one-step lookahead to find the best action
+	            A = one_step_lookahead(s, V)
+	            best_action_value = np.max(A)
+	            # Calculate delta across all states seen so far
+	            delta = max(delta, np.abs(best_action_value - V[s]))
+	            # Update the value function
+	            V[s] = best_action_value        
+	        # Check if we can stop 
+	        if delta < theta:
+	            break
+	     
+	    # Create a deterministic policy using the optimal value function
+	    policy = np.zeros([env.nS, env.nA])
+	    for s in range(env.nS):
+	        # One step lookahead to find the best action for this state
+	        A = one_step_lookahead(s, V)
+	        best_action = np.argmax(A)
+	        # Always take the best action
+	        policy[s, best_action] = 1.0
+	     
+	    return policy, V
+	 
+	policy, v = value_iteration(env)
+	 
+	print("Policy Probability Distribution:")
+	print(policy)
+	print("")
+	 
+	print("Reshaped Grid Policy (0=up, 1=right, 2=down, 3=left):")
+	print(np.reshape(np.argmax(policy, axis=1), env.shape))
+	print("")				
+				\end{lstlisting}
+		
+		
+	\section{Model-Free 蒙特卡洛}
+		蒙特卡罗强化学习算法通过考虑采样轨迹?克服了模型未知给策略估计造成的困难.
+		
+		
+		
+	\section{瞬时差分法: Temporal-Difference TD}
+		时序差分(Temporal Difference ，简称 TD) 学习则结合了动态规划与蒙特卡罗方法的思想，能做到更高效的免模型学习.
+		
+	\section{TD($\lambda$)}
+				
+	\section{Q-Learning}
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=\linewidth]{qFuncProcess2}
+		\end{figure}
 		\subsection{Q-learning 从案例到原理}	
 			\url{http://www.sohu.com/a/228536039_129720}
 			
@@ -488,7 +797,6 @@
 					\begin{figure}[H]
 						\centering
 						\includegraphics[width=.4\linewidth]{qFuncProcess}
-						\includegraphics[width=\linewidth]{qFuncProcess2}
 					\end{figure}
 				
 				
@@ -607,15 +915,93 @@ New Q value = Current Q value + lr * [Reward + discount_rate * (highest Q value 
 					\includegraphics[width=.7\linewidth]{qExample06}
 				\end{figure}
 				
-				刚刚更新了第一个 Q 值。现在我们要做的就是\textbf{一次又一次地做这个工作直到学习结束}。
-				
-						
-	\section{Q-Learning}
-	
+				刚刚更新了第一个 Q 值。现在我们要做的就是\textbf{一次又一次地做这个工作直到学习结束}。		
+		
 	\section{Saras}
+		\subsection{Saras}
+			单步安全迭代更新
+		
+		\subsection{Saras($\lambda$)}
+			$\lambda$ 步迭代更新。
 	
 	\section{Deep-Q-Network}
+		这是一种融合了\textbf{神经网络}和 \textbf{Q learning} 的方法, 名字叫做 Deep Q Network.
+			\begin{figure}[H]
+				\centering
+				\includegraphics[width=.9\linewidth]{DQN1}
+			\end{figure}
 		
+		\subsection{神经网络的作用}
+			使用表格来存储每一个状态 state, 和在这个 state 每个行为 action 所拥有的 Q 值. \textbf{而当今问题是在太复杂, 状态可以多到比天上的星星还多(比如下围棋). 如果全用表格来存储它们, 恐怕我们的计算机有再大的内存都不够, 而且每次在这么大的表格中搜索对应的状态也是一件很耗时的事}. 不过, 在机器学习中, 有一种方法对这种事情很在行, 那就是神经网络. 我们\textbf{可以将状态和动作当成神经网络的输入, 然后经过神经网络分析后得到动作的 Q 值, 这样我们就没必要在表格中记录 Q 值, 而是直接使用神经网络生成 Q 值}. 还有一种形式的是这样, 我们\textbf{也能只输入状态值, 输出所有的动作值, 然后按照 Q learning 的原则, 直接选择拥有最大值的动作当做下一步要做的动作}. 
+			
+			\begin{figure}[H]
+				\centering
+				\includegraphics[width=.9\linewidth]{DQN2}
+			\end{figure}
+		
+			我们可以想象, 神经网络接受外部的信息, 相当于眼睛鼻子耳朵收集信息, 然后通过大脑加工输出每种动作的值, 最后通过强化学习的方式选择动作.
+			
+		\subsection{训练神经网络}
+			基于第二种神经网络来分析
+			
+			我们知道, 神经网络是要被训练才能预测出准确的值. 那在强化学习中, 神经网络是如何被训练的呢? 首先, 我们需要 a1, a2 正确的Q值, 这个 Q 值我们就用之前在 Q learning 中的 Q 现实来代替. 同样我们还需要一个 Q 估计 来实现神经网络的更新. 所以神经网络的的参数就是老的 NN 参数 加学习率 alpha 乘以 Q 现实 和 Q 估计 的差距. 我们整理一下.
+			\begin{figure}[H]
+				\centering
+				\includegraphics[width=.9\linewidth]{DQN3}
+				\includegraphics[width=.9\linewidth]{DQN4}
+			\end{figure}			
+			通过 NN 预测出Q(s2, a1) 和 Q(s2,a2) 的值, 这就是 Q 估计. 然后我们选取 Q 估计中最大值的动作来换取环境中的奖励 reward. 而 Q 现实中也包含从神经网络分析出来的两个 Q 估计值, 不过这个 Q 估计是针对于下一步在 s’ 的估计. 最后再通过刚刚所说的算法更新神经网络中的参数. 但是这并不是 DQN 会玩电动的根本原因. 还有两大因素支撑着 DQN 使得它变得无比强大. 这两大因素就是 Experience replay 和 Fixed Q-targets.
+		
+		\subsection{DQN 两大利器}
+			DQN 有一个记忆库用于学习之前的经历, Q learning 是一种 off-policy 离线学习法, 它能学习当前经历着的, 也能学习过去经历过的, 甚至是学习别人的经历. 所以每次 DQN 更新的时候, 我们都可以随机抽取一些之前的经历进行学习. 随机抽取这种做法打乱了经历之间的相关性, 也使得神经网络更新更有效率. 
+			
+			Fixed Q-targets 也是一种打乱相关性的机理, 如果使用 fixed Q-targets, 我们就会在 DQN 中使用到两个结构相同但参数不同的神经网络, 预测 Q 估计 的神经网络具备最新的参数, 而预测 Q 现实 的神经网络使用的参数则是很久以前的. 
+	
+	
+	
+	\section{Actor-Critic}
+		实现：\url{https://blog.csdn.net/qq_30615903/article/details/80774384}
+		
+		理论：\url{https://zhuanlan.zhihu.com/p/36494307}
+		
+		
+		Actor-Critic算法分为两部分，我们分开来看actor的前身是policy gradient他可以轻松地在连续动作空间内选择合适的动作，value-based的Qlearning做这件事就会因为空间过大而爆炸，但是又因为Actor是基于回合更新的所以学习效率比较慢，这时候我们发现可以使用一个value-based的算法作为Critic就可以实现单步更新。这样两种算法相互补充就形成了我们的Actor-Critic.
+
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=.9\linewidth]{Actor-Critic}
+		\end{figure}
+		
+		\textbf{Actor 基于概率选行为, Critic 基于 Actor 的行为评判行为的得分, Actor 根据 Critic 的评分修改选行为的概率。}
+		
+		
+				
+\chapter{统计数学方法-李航}
+
+
+\chapter{神经网络与机器学习-SimonHaykn}
+	\section{什么是神经网络}
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=\linewidth]{Neuron}
+			\caption{单神经元}
+		\end{figure}
+	
+	
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=\linewidth]{Neuron2}
+			\caption{神经网络}
+		\end{figure}
+	
+	
+
+\chapter{机器学习-周志华、吴恩达}
+
+
+\chapter{深度学习-花书}
+
+
 
 \chapter{案例分析}
 
