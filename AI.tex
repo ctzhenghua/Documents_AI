@@ -705,19 +705,33 @@
 		
 		
 	\section{Model-Free 蒙特卡洛}
-		蒙特卡罗强化学习算法通过考虑采样轨迹?克服了模型未知给策略估计造成的困难.
+		蒙特卡罗强化学习算法通过考虑\textbf{采样轨迹}克服了模型未知给策略估计造成的困难.
+		
+		多次"\textbf{采样}"，然后\textbf{求取平均累积奖赏}来作为期望累积奖赏的近似，这称为蒙特卡罗强化学习.
+		
+		利用$\epsilon$ 因子，当随机数大于$\epsilon$ 利用，当随机数小于$\epsilon$ 进行探索。换句话说，就是以$1-\epsilon$概率进行利用，以$\epsilon$ 概率进行均匀探索。 
 		
 		
 		
 	\section{瞬时差分法: Temporal-Difference TD}
 		时序差分(Temporal Difference ，简称 TD) 学习则结合了动态规划与蒙特卡罗方法的思想，能做到更高效的免模型学习.
+
+	\section{Saras}
+		在蒙特卡洛的基础上，结合动态规划进行性能提升，使得可以在每一步采样后都可以对Policy 进行提升，采样的策略与提升的策略相同：OnPolicy.
 		
-	\section{TD($\lambda$)}
+		\subsection{Saras}
+			单步安全迭代更新
+		
+		\subsection{Saras($\lambda$)}
+			$\lambda$ 步迭代更新。
 				
 	\section{Q-Learning}
+		采样的策略与提升的策略不相同：OffPolicy.
+	
 		\begin{figure}[H]
 			\centering
 			\includegraphics[width=\linewidth]{qFuncProcess2}
+			\includegraphics[width=\linewidth]{qFuncProcess3}
 		\end{figure}
 		\subsection{Q-learning 从案例到原理}	
 			\url{http://www.sohu.com/a/228536039_129720}
@@ -836,8 +850,6 @@ New Q value = Current Q value + lr * [Reward + discount_rate * (highest Q value 
 							
 					\end{itemize}
 				
-			\paragraph{Dynamic Solve}
-
 			
 			\paragraph{$\alpha$ 学习率}
 				可以将学习率看作是网络\textbf{有多快地抛弃旧值、生成新值的度量}。如果学习率是 1，新的估计值会成为新的 Q 值，并完全抛弃旧值。
@@ -917,18 +929,26 @@ New Q value = Current Q value + lr * [Reward + discount_rate * (highest Q value 
 				
 				刚刚更新了第一个 Q 值。现在我们要做的就是\textbf{一次又一次地做这个工作直到学习结束}。		
 		
-	\section{Saras}
-		\subsection{Saras}
-			单步安全迭代更新
-		
-		\subsection{Saras($\lambda$)}
-			$\lambda$ 步迭代更新。
+
 	
 	\section{Deep-Q-Network}
+		\url{https://www.jianshu.com/p/41659ce20f15}
+	
 		这是一种融合了\textbf{神经网络}和 \textbf{Q learning} 的方法, 名字叫做 Deep Q Network.
 			\begin{figure}[H]
 				\centering
 				\includegraphics[width=.9\linewidth]{DQN1}
+			\end{figure}
+			
+			\begin{figure}[H]
+				\centering
+				\includegraphics[width=.9\linewidth]{DQN6}
+				\caption{DQN 算法概述}
+			\end{figure}			
+			\begin{figure}[H]
+				\centering
+				\includegraphics[width=.9\linewidth]{DQN5}
+				\caption{DQN 算法概述}
 			\end{figure}
 		
 		\subsection{神经网络的作用}
@@ -952,13 +972,66 @@ New Q value = Current Q value + lr * [Reward + discount_rate * (highest Q value 
 			\end{figure}			
 			通过 NN 预测出Q(s2, a1) 和 Q(s2,a2) 的值, 这就是 Q 估计. 然后我们选取 Q 估计中最大值的动作来换取环境中的奖励 reward. 而 Q 现实中也包含从神经网络分析出来的两个 Q 估计值, 不过这个 Q 估计是针对于下一步在 s’ 的估计. 最后再通过刚刚所说的算法更新神经网络中的参数. 但是这并不是 DQN 会玩电动的根本原因. 还有两大因素支撑着 DQN 使得它变得无比强大. 这两大因素就是 Experience replay 和 Fixed Q-targets.
 		
+		\subsection{经验回放}
+			\textit{构建一个经验池（Replay Buffer）来去除数据相关性。经验池是由智能体最近的经历组成的数据集。}
+		
+			事实证明，使用非线性函数得到近似的 Q 值是不稳定的。要使它真正收敛还需要加入很多技巧，而且要花费很长的时间，即使使用一个 GPU 也要耗上差不多一周的时间。
+			
+			最重要的一个技巧就是经验回放。在游戏过程中，所有的经历 <s, a, r, s'> 都存储在一个可回顾的记忆模块中。训练神经网络的时候，会从记忆中取出随机小批量的记忆片段来训练，而不是直接使用最近期的经历。这样就切断了之后相似训练情况的连续性，这种相似性往往会使整个网络局限于一小块状态区域。此外，经验回放使训练任务更类似于通常的监督学习，这简化了调试和测试算法。而且也可以直接收集人类玩游戏的经验，在此基础上继续训练。
+		
+		\subsection{目标网络冻结}
+			\textit{目标网络冻结（Freezing Target Networks），即在一个时间段内固定目标中的参数，来稳定学习目标}
+		
 		\subsection{DQN 两大利器}
 			DQN 有一个记忆库用于学习之前的经历, Q learning 是一种 off-policy 离线学习法, 它能学习当前经历着的, 也能学习过去经历过的, 甚至是学习别人的经历. 所以每次 DQN 更新的时候, 我们都可以随机抽取一些之前的经历进行学习. 随机抽取这种做法打乱了经历之间的相关性, 也使得神经网络更新更有效率. 
 			
 			Fixed Q-targets 也是一种打乱相关性的机理, 如果使用 fixed Q-targets, 我们就会在 DQN 中使用到两个结构相同但参数不同的神经网络, 预测 Q 估计 的神经网络具备最新的参数, 而预测 Q 现实 的神经网络使用的参数则是很久以前的. 
 	
 	
-	
+	\section{Policy Gradient}
+		\url{https://www.jianshu.com/p/2ccbab48414b}
+		
+		\subsection{ReinForce　算法}
+			策略梯度的基本思想，就是直接根据状态输出动作或者动作的概率。
+			
+			在训练神经网络中，使用最多的方法就是反向传播算法，其中需要一个误差函数，通过梯度下降来使损失函数的值最小化。但对于强化学习来说，我们不知道动作的正确与否，只能通过奖励值来判断这个动作的相对好坏。基于上面的想法，有个非常简单的想法：
+			
+			\textbf{如果一个动作得到的reward多，那么我们就使其出现的概率增加，如果一个动作得到的reward少，我们就使其出现的概率减小。}
+			
+			根据这个思想，可以构造如下的损失函数：$loss= -log(prob)*vt$
+			
+			\begin{itemize}
+				\item $log(prob)$ 表示在状态 s 对所选动作 a 的\textbf{吃惊度}, \textit{如果概率越小, 反向的log(prob) 反而越大}
+				\item $vt$ 代表的是当前状态s下采取动作a所能得到的奖励，这是当前的奖励和未来奖励的贴现值的求和
+			\end{itemize}
+		
+			也就是说，我们的策略梯度算法\textbf{必须要完成一个完整的eposide}才可以进行参数更新，而不是像值方法那样，每一个$(s,a,r,s')$都可以进行参数更新。
+			
+			Policy Gradient的核心思想是更新参数时有两个考虑：如果这个回合选择某一动作，下一回合选择该动作的概率大一些，然后再看奖惩值，如果奖惩是正的，那么会放大这个动作的概率，如果奖惩是负的，就会减小该动作的概率。
+			
+			策略梯度的过程如下图所示：
+			\begin{figure}[H]
+				\centering
+				\includegraphics[width=.8\linewidth]{PolicyGradient}
+				\caption{策略梯度}
+			\end{figure}
+			
+			最后再强调Policy Gradient的一些细节：
+			\begin{itemize}
+				\item 算法输出的是\textbf{动作的概率}，而不是Q值。
+				\item 损失函数的形式为：$loss= -log(prob)*vt$
+				\item \textbf{需要}一次\textbf{完整的episode}才可以进行参数的更新
+			\end{itemize}
+		
+		\subsection{带基准线的 ReInforce 算法}
+			REINFORCE 算法的一个主要缺点是不同路径之间的方差很大，导致训练不稳定，这是在高维空间中使用蒙特卡罗方法的通病。一种减少方差的通用方法是引入一个控制变量。
+			
+			假设要估计函数f 的期望，为了减少f 的方差，我们引入一个已知期望的函数g，令
+			
+			$$\hat{f} = f - \alpha(g - E[g]).$$
+			
+			因为$E[\hat{f}] = E[f]$，我们可以用$\hat{f}$ 的期望来估计函数f 的期望，同时利用函数g 来减小 $\hat{f}$ 的方差。
+			
 	\section{Actor-Critic}
 		实现：\url{https://blog.csdn.net/qq_30615903/article/details/80774384}
 		
@@ -973,6 +1046,12 @@ New Q value = Current Q value + lr * [Reward + discount_rate * (highest Q value 
 		\end{figure}
 		
 		\textbf{Actor 基于概率选行为, Critic 基于 Actor 的行为评判行为的得分, Actor 根据 Critic 的评分修改选行为的概率。}
+		
+		
+	\section{模仿学习}
+		在强化学习的经典任务设置中，机器所能获得的反馈信息仅有多步决策后的累积奖赏，但在现实任务中，往往能得到人类专家的决策过程范例，例如在种瓜任务上能得到农业专家的种植过程范例.从这样的范例中学习，称为"模仿学习" (imitation "learning).	
+		
+		强化学习任务中多步决策的搜索空间巨大，基于累积奖赏来学习很多步之前的合适决策非常困难'而直接模仿仿，人类专家的"状态-动作对 白闯民显显著缓解这一困难'我们称其为"直接模仿学习。
 		
 		
 				
@@ -1001,6 +1080,7 @@ New Q value = Current Q value + lr * [Reward + discount_rate * (highest Q value 
 
 \chapter{深度学习-花书}
 
+\chapter{贯通-OReilly.Hands-On.Machine.Learning}
 
 
 \chapter{案例分析}
