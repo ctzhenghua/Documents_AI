@@ -259,9 +259,15 @@
 
 \chapter{强化学习-D·Silver}
 	\section{参考}
+		学习途径汇总、Paper链接：\url{https://www.cnblogs.com/charlotte77/p/10311255.html}
+	
+		简书专栏：\url{https://www.jianshu.com/nb/22672858}
+	
 		知乎专栏：\url{https://zhuanlan.zhihu.com/p/25498081}
 		
-		博客：\url{https://www.cnblogs.com/jinxulin/p/3517377.html}
+		博客专栏：\url{https://www.cnblogs.com/jinxulin/tag/增强学习}
+		
+		D·Silver 笔记专栏：\url{https://zhuanlan.zhihu.com/p/50478310}
 		
 		Towards Data: \url{https://towardsdatascience.com/understanding-markov-decision-processes-b5862c192ddb}
 		
@@ -713,9 +719,24 @@
 		
 		
 		
-	\section{瞬时差分法: Temporal-Difference TD}
-		时序差分(Temporal Difference ，简称 TD) 学习则结合了动态规划与蒙特卡罗方法的思想，能做到更高效的免模型学习.
-
+	\section{TD-Temporal-Difference 瞬时差分法}
+		\url{https://www.cnblogs.com/jinxulin/p/5116332.html}
+		
+		时序差分(Temporal Difference ，简称 TD) 学习则结合了动态规划与蒙特卡罗方法的思想，能做到更\textbf{高效的}、\textbf{免模型}(\textit{不需要提前知道环境模型})学习.
+		
+		从而不局限于需要采样整个Episode, 当个状态间就可以实现值迭代。
+		
+		\subsection{原理}
+			
+			
+			
+		\subsection{典型算法}
+			\begin{itemize}
+			\item Saras
+			\item Q-learning
+			\end{itemize}
+		
+		
 	\section{Saras}
 		在蒙特卡洛的基础上，结合动态规划进行性能提升，使得可以在每一步采样后都可以对Policy 进行提升，采样的策略与提升的策略相同：OnPolicy.
 		
@@ -873,6 +894,8 @@ New Q value = Current Q value + lr * [Reward + discount_rate * (highest Q value 
 	
 		\subsection{Q-learning 案例示例}
 		
+			案例2：\url{https://www.jianshu.com/p/29db50000e3f}
+		
 			\paragraph{Environment}
 				老鼠奶酪游戏。
 				
@@ -932,7 +955,13 @@ New Q value = Current Q value + lr * [Reward + discount_rate * (highest Q value 
 
 	
 	\section{Deep-Q-Network}
-		\url{https://www.jianshu.com/p/41659ce20f15}
+		原理概述：\url{https://www.jianshu.com/p/41659ce20f15}
+		
+		原理概述：\url{https://www.jianshu.com/p/10930c371cac} 
+		 
+		原理细节(待)：\url{https://blog.csdn.net/u013236946/article/details/72871858}
+		
+		DQN拓展形式汇总：\url{https://www.jianshu.com/p/1dfd84cd2e69}
 	
 		这是一种融合了\textbf{神经网络}和 \textbf{Q learning} 的方法, 名字叫做 Deep Q Network.
 			\begin{figure}[H]
@@ -960,7 +989,70 @@ New Q value = Current Q value + lr * [Reward + discount_rate * (highest Q value 
 			\end{figure}
 		
 			我们可以想象, 神经网络接受外部的信息, 相当于眼睛鼻子耳朵收集信息, 然后通过大脑加工输出每种动作的值, 最后通过强化学习的方式选择动作.
+		
+		\subsection{DL和RL结合带来的问题}
+			\begin{enumerate}
+				\item DL需要大量带标签的样本进行监督学习；RL只有reward返回值，而且伴随着噪声，延迟（过了几十毫秒才返回），稀疏（很多State的reward是0）等问题；
+				\item DL的样本独立；RL前后state状态相关
+				\item DL目标分布固定；RL的分布一直变化，比如你玩一个游戏，一个关卡和下一个关卡的状态分布是不同的，所以训练好了前一个关卡，下一个关卡又要重新训练；
+				\item 过往的研究表明，使用非线性网络表示值函数时出现不稳定等问题。
+			\end{enumerate}
+		
+		\subsection{DQN解决问题方法}
+			\begin{enumerate}
+				\item 通过Q-Learning使用reward来构造标签（对应问题1）
+				\item 通过experience replay（经验池）的方法来解决相关性及非静态分布问题（对应问题2、3）
+				\item 使用一个神经网络产生当前Q值，使用另外一个神经网络产生Target Q值（对应问题4）
+			\end{enumerate}
 			
+			\paragraph{构造标签}
+				\verb|->|
+				
+				对于函数优化问题，监督学习的一般方法是先确定Loss Function，然后求梯度，使用随机梯度下降等方法更新参数。
+				
+				DQN则基于Q-Learning来确定Loss Function。我们想要使q-target值和q-eval值相差越小越好。DQN中的损失函数是：
+				
+				$$
+				J_i(\theta_i) = \mathbb{E}_{s,a \sim \pi}\left[(y_i - Q(s,a;\theta_i))^2 \right]
+				$$
+				
+				这里$y_i$是根据\textbf{上一个迭代周期}或者说target-net网络的参数计算出的q-target值，跟当前网络结构中的参数无关，$y_i$的计算如下：
+				
+				$$
+				y_i = \mathbb{E}_{s' \sim \pi^\epsilon}\left[r + \gamma max_{a'} Q(s', a'; \theta_{i-1})|s,a \right]
+				$$
+				
+				这样，整个目标函数就可以通过随机梯度下降方法来进行优化：
+				
+				$$
+					\nabla_{\theta_i} J_i(\theta_i) = \mathbb{E}_{s,a \sim \pi; s' \sim \pi^\epsilon}\left[ \left(r + \gamma max_{a'} Q(s', a'; \theta_{i-1}) - Q(s,a; \theta_i)\right) \nabla_{\theta_i}Q(s,a;\theta_i) \right]
+				$$
+				
+			\paragraph{经验回放}
+				\verb|->|
+			
+				经验池的功能主要是解决相关性及非静态分布问题。具体做法是把每个时间步agent与环境交互得到的转移样本 (st,at,rt,st+1) 储存到回放记忆单元，\textbf{要训练时就随机拿出一些（minibatch）来训练}。（其实就是将游戏的过程打成碎片存储，训练时随机抽取就避免了相关性问题）
+				
+				\textit{构建一个经验池（Replay Buffer）来去除数据相关性。经验池是由智能体最近的经历组成的数据集。}
+			
+				事实证明，使用非线性函数得到近似的 Q 值是不稳定的。要使它真正收敛还需要加入很多技巧，而且要花费很长的时间，即使使用一个 GPU 也要耗上差不多一周的时间。
+				
+				最重要的一个技巧就是经验回放。在游戏过程中，所有的经历 <s, a, r, s'> 都存储在一个可回顾的记忆模块中。训练神经网络的时候，会从记忆中取出随机小批量的记忆片段来训练，而不是直接使用最近期的经历。这样就切断了之后相似训练情况的连续性，这种相似性往往会使整个网络局限于一小块状态区域。此外，经验回放使训练任务更类似于通常的监督学习，这简化了调试和测试算法。而且也可以直接收集人类玩游戏的经验，在此基础上继续训练。
+				
+			\paragraph{双网络结构}
+				\verb|->|
+				
+				在Nature 2015版本的DQN中提出了这个改进，使用另一个网络（这里称为\verb|target_net|）产生Target Q值。具体地，$Q(s,a;\theta_i)$ 表示当前网络\verb|eval_net|的输出，用来评估当前状态动作对的值函数；$Q(s,a;\theta_{i-1})$ 表示\verb|target_net|的输出，代入上面求 TargetQ 值的公式中得到目标Q值。根据上面的Loss Function更新\verb|eval_net|的参数，每经过N轮迭代，将MainNet的参数复制给\verb|target_net|。
+				
+				上述的N轮迭代既\textit{目标网络冻结（Freezing Target Networks），即在一个时间段内固定目标中的参数，来稳定学习目标}。
+				
+				引入\verb|target_net|后，在一段时间里目标Q值使保持不变的，一定程度降低了当前Q值和目标Q值的相关性，提高了算法稳定性。
+
+				\begin{figure}[H]
+					\centering
+					\includegraphics[width=.9\linewidth]{DQN7}
+				\end{figure}
+							
 		\subsection{训练神经网络}
 			基于第二种神经网络来分析
 			
@@ -972,26 +1064,65 @@ New Q value = Current Q value + lr * [Reward + discount_rate * (highest Q value 
 			\end{figure}			
 			通过 NN 预测出Q(s2, a1) 和 Q(s2,a2) 的值, 这就是 Q 估计. 然后我们选取 Q 估计中最大值的动作来换取环境中的奖励 reward. 而 Q 现实中也包含从神经网络分析出来的两个 Q 估计值, 不过这个 Q 估计是针对于下一步在 s’ 的估计. 最后再通过刚刚所说的算法更新神经网络中的参数. 但是这并不是 DQN 会玩电动的根本原因. 还有两大因素支撑着 DQN 使得它变得无比强大. 这两大因素就是 Experience replay 和 Fixed Q-targets.
 		
-		\subsection{经验回放}
-			\textit{构建一个经验池（Replay Buffer）来去除数据相关性。经验池是由智能体最近的经历组成的数据集。}
-		
-			事实证明，使用非线性函数得到近似的 Q 值是不稳定的。要使它真正收敛还需要加入很多技巧，而且要花费很长的时间，即使使用一个 GPU 也要耗上差不多一周的时间。
-			
-			最重要的一个技巧就是经验回放。在游戏过程中，所有的经历 <s, a, r, s'> 都存储在一个可回顾的记忆模块中。训练神经网络的时候，会从记忆中取出随机小批量的记忆片段来训练，而不是直接使用最近期的经历。这样就切断了之后相似训练情况的连续性，这种相似性往往会使整个网络局限于一小块状态区域。此外，经验回放使训练任务更类似于通常的监督学习，这简化了调试和测试算法。而且也可以直接收集人类玩游戏的经验，在此基础上继续训练。
-		
-		\subsection{目标网络冻结}
-			\textit{目标网络冻结（Freezing Target Networks），即在一个时间段内固定目标中的参数，来稳定学习目标}
-		
 		\subsection{DQN 两大利器}
 			DQN 有一个记忆库用于学习之前的经历, Q learning 是一种 off-policy 离线学习法, 它能学习当前经历着的, 也能学习过去经历过的, 甚至是学习别人的经历. 所以每次 DQN 更新的时候, 我们都可以随机抽取一些之前的经历进行学习. 随机抽取这种做法打乱了经历之间的相关性, 也使得神经网络更新更有效率. 
 			
 			Fixed Q-targets 也是一种打乱相关性的机理, 如果使用 fixed Q-targets, 我们就会在 DQN 中使用到两个结构相同但参数不同的神经网络, 预测 Q 估计 的神经网络具备最新的参数, 而预测 Q 现实 的神经网络使用的参数则是很久以前的. 
+		
+		
+		\subsection{DQN-改进-Double DQN}
+			\url{https://www.jianshu.com/p/fae51b5fe000}
+			
+		\subsection{DQN-改进-Prioritised replay}
+			\url{https://www.jianshu.com/p/db14fdc67d2c}
+			
+		\subsection{Dueling Network}
+			\url{https://www.jianshu.com/p/b421c85796a2}
+	
+	
 	
 	
 	\section{Policy Gradient}
 		\url{https://www.jianshu.com/p/2ccbab48414b}
 		
-		\subsection{ReinForce　算法}
+		\textbf{采样Trajectory、训练},Loss 函数为奖励最大
+		
+		在PG算法中，我们的Agent又被称为Actor，Actor对于一个特定的任务，都有自己的一个策略$\pi$，策略$\pi$通常用一个神经网络表示，其参数为$\theta$。从一个特定的状态state出发，一直到任务的结束，被称为一个完整的eposide，在每一步，我们都能获得一个奖励r，一个完整的任务所获得的最终奖励被称为R。这样，一个有T个时刻的eposide，Actor不断与环境交互，形成如下的序列$\tau$：
+		\begin{figure}[H]
+		\centering
+		\includegraphics[width=.9\linewidth]{PG01}
+		\caption{PG 采样结果示例}
+		\end{figure}
+		
+		这样一个序列$\tau$是不确定的，因为Actor在不同state下所采取的action可能是不同的，一个序列$\tau$发生的概率为：
+		\begin{figure}[H]
+		\centering
+		\includegraphics[width=.8\linewidth]{PG02}
+		\end{figure}		
+		
+		序列$\tau$所获得的奖励为每个阶段所得到的奖励的和，称为R($\tau$)。因此，在Actor的策略为$\pi$的情况下，所能获得的期望奖励为：
+		\begin{figure}[H]
+		\centering
+		\includegraphics[width=.6\linewidth]{PG03}
+		\end{figure}		
+		
+		而我们的期望是调整Actor的策略$\pi$，使得期望奖励最大化，于是我们有了策略梯度的方法，既然我们的期望函数已经有了，我们只要使用梯度提升的方法更新我们的网络参数$\theta$（即更新策略$\pi$）就好了，所以问题的重点变为了求参数的梯度。梯度的求解过程如下：
+		\begin{figure}[H]
+		\centering
+		\includegraphics[width=.9\linewidth]{PG04}
+		\end{figure}		
+		
+		上面的过程中，我们首先利用\textbf{log函数}求导的特点进行转化，随后\textbf{用N次采样的}平均值来近似期望，最后，我们将$p_\theta$展开，将与$\theta$无关的项去掉，即得到了最终的结果。
+		
+		所以，一个PG方法的完整过程如下：
+		\begin{figure}[H]
+		\centering
+		\includegraphics[width=.9\linewidth]{PG05}
+		\end{figure}			
+		
+		我们\textbf{首先采集数据，然后基于前面得到的梯度提升的式子更新参数，随后再根据更新后的策略再采集数据，再更新参数，如此循环进行}。注意到图中的大红字only used once，因为在更新参数后，我们的策略已经变了，而先前的数据是基于更新参数前的策略得到的。
+
+		\subsection{PG ReinForce　算法}
 			策略梯度的基本思想，就是直接根据状态输出动作或者动作的概率。
 			
 			在训练神经网络中，使用最多的方法就是反向传播算法，其中需要一个误差函数，通过梯度下降来使损失函数的值最小化。但对于强化学习来说，我们不知道动作的正确与否，只能通过奖励值来判断这个动作的相对好坏。基于上面的想法，有个非常简单的想法：
@@ -1034,27 +1165,144 @@ New Q value = Current Q value + lr * [Reward + discount_rate * (highest Q value 
 			
 	\section{Actor-Critic}
 		实现：\url{https://blog.csdn.net/qq_30615903/article/details/80774384}
-		
+			
+			\url{https://www.jianshu.com/p/25c09ae3d206}
+			
 		理论：\url{https://zhuanlan.zhihu.com/p/36494307}
 		
+		AC代码的实现地址为：\url{https://github.com/princewen/tensorflow_practice/tree/master/RL/Basic-AC-Demo}
 		
-		Actor-Critic算法分为两部分，我们分开来看actor的前身是policy gradient他可以轻松地在连续动作空间内选择合适的动作，value-based的Qlearning做这件事就会因为空间过大而爆炸，但是又因为Actor是基于回合更新的所以学习效率比较慢，这时候我们发现可以使用一个value-based的算法作为Critic就可以实现单步更新。这样两种算法相互补充就形成了我们的Actor-Critic.
-
+			\begin{figure}[H]
+				\centering
+				\includegraphics[width=.95\linewidth]{Actor-Critic2}
+				\caption{演员-评论员 算法}
+			\end{figure}		
+		
+		在PG策略中，如果我们用Q函数来代替R，同时我们创建一个Critic网络来计算Q函数值，那么我们就得到了Actor-Critic方法。
+		Actor参数的梯度变为：
+		
 		\begin{figure}[H]
+		\centering
+		\includegraphics[width=.9\linewidth]{PG06}
+		\end{figure}		
+		
+		此时的Critic根据估计的Q值和实际Q值的平方误差进行更新，对Critic来说，其loss为：
+		
+		\begin{figure}[H]
+		\centering
+		\includegraphics[width=.9\linewidth]{PG07}
+		\end{figure}		
+		
+		
+		
+		\subsection{原理概述}
+			Actor-Critic算法分为两部分，我们分开来看actor的前身是policy gradient他可以轻松地在连续动作空间内选择合适的动作，value-based的Qlearning做这件事就会因为空间过大而爆炸，但是又因为Actor是基于回合更新的所以学习效率比较慢，这时候我们发现可以使用一个value-based的算法作为Critic就可以实现单步更新。这样两种算法相互补充就形成了我们的Actor-Critic.
+	
+			\begin{figure}[H]
+				\centering
+				\includegraphics[width=.9\linewidth]{Actor-Critic}
+			\end{figure}			
+			
+			\textbf{Actor 基于概率选行为, Critic 基于 Actor 的行为评判行为的得分, Actor 根据 Critic 的评分修改选行为的概率。}
+				
+			在演员-评论员 算法中的\textbf{策略函数} $\pi_\theta (s, a)$ 和\textbf{值函数} $V_\phi(s) $都是待学习的函数，需要在训练过程中同时学习。	
+				
+			一方面，更新参数$\phi$使得值函数$V_\phi(s_t)$接近于估计的真实回报$G(r_t:T)$，
+				$$
+					min_\phi \left( G(r_t:T) - V_\phi(s_t)\right)^2
+				$$
+				
+			一方面，将值函数$V_\phi(s_t)$作为基线函数来更新参数$\theta$，减少策略梯度的方差。
+				
+				$$ \theta \gets \theta + \alpha\gamma^t\left(G(r_t:T) - V_\phi(s_t)\right) \dfrac{\delta}{\delta\theta}log\pi_\theta(a_t|s_t)$$
+		
+			\textbf{在每步更新中}，\underline{演员}根据当前的环境状态$s$和策略$\pi_\theta(a|s)$去执行动作$a$，环境状态变为$s′$，并得到即时奖励$r$。\underline{评论员}（值函数$V_\phi(s)$）根\textit{据环境给出的真实奖励和之前标准下的打分}$(r + \gamma V_\phi(s'))$，来调整自己的打分标准，使得自己的评分更接近环境的真实回报。\underline{演员}\textit{则跟据评论员的打分，调整自己的策略}$\pi_\theta$，争取下次做得更好。开始训练时，演员随机表演，评论员随机打分。通过不断的学习，评论员的评分越来越准，演员的动作越来越好。
+	
+		\subsection{Advantage Actor-Critic(A2C)}
+			原理：\url{https://www.jianshu.com/p/428b640046aa}	
+			
+			A2C代码的实现地址为：\url{https://github.com/princewen/tensorflow_practice/tree/master/RL/Basic-A2C-Demo}
+		
+			我们常常给Q值增加一个基线，使得反馈有正有负，这里的基线通常用状态的价值函数来表示，因此梯度就变为了：
+			
+			\begin{figure}[H]
 			\centering
-			\includegraphics[width=.9\linewidth]{Actor-Critic}
-		\end{figure}
+			\includegraphics[width=.9\linewidth]{PG08}
+			\end{figure}				
+			但是，这样的话我们需要有两个网络分别计算状态-动作价值Q和状态价值V，因此我们做这样的转换：
+			
+			\begin{figure}[H]
+			\centering
+			\includegraphics[width=.9\linewidth]{PG09}
+			\end{figure}				
+			这样会是增加一定的方差，不过可以忽略不计，这样我们就得到了Advantage Actor-Critic方法，此时的Critic变为估计状态价值V的网络。因此Critic网络的损失变为实际的状态价值和估计的状态价值的平方损失：
+			
+			\begin{figure}[H]
+			\centering
+			\includegraphics[width=.9\linewidth]{PG0}
+			\end{figure}				
+			
+		\subsection{Asynchronous  Advantage  Actor-Critic(A3C)}
+			A3C代码的实现地址为：\url{https://github.com/princewen/tensorflow_practice/tree/master/RL/Basic-A3C-Demo}
 		
-		\textbf{Actor 基于概率选行为, Critic 基于 Actor 的行为评判行为的得分, Actor 根据 Critic 的评分修改选行为的概率。}
+			直接更新策略的方法，其迭代速度都是非常慢的，为了充分利用计算资源，又有了Asynchronous Advantage Actor-Critic 方法，拿火影的例子来说，鸣人想要修炼螺旋手里剑，但是时间紧迫，因此制造了1000个影分身，这样它的学习速度也可以提升500倍
+			
+			A3C的模型如下图所示：
+			\begin{figure}[H]
+			\centering
+			\includegraphics[width=.9\linewidth]{A3C}
+			\end{figure}				
+			
+			可以看到，我们有一个主网络，还有许多Worker，每一个Worker也是一个A2C的net，A3C主要有两个操作，一个是pull，一个是push：
+			\begin{itemize}
+			\item pull：把主网络的参数直接赋予Worker中的网络
+			\item push：使用各Worker中的梯度，对主网络的参数进行更新
+			\end{itemize}
+			
+	
+	\section{ACER}
 		
+			
+	\section{DPG、DDPG-Deep Deteministic Policy Gradient}
+		是Actor-Critic 和 DQN 算法的结合体.
 		
+		连续动作空间 \& Actor-Critic（off-policy） \& model free
+		
+		\subsection{基础}
+			\url{https://www.jianshu.com/p/6fe18d0d8822}
+		
+		\subsection{多智能体强化}
+			\url{https://www.jianshu.com/p/4e4e35d80137}
+			
+	\section{TRPO}
+		
+	
+	\section{PPO-Proximal Policy Optimization}
+		\url{https://www.jianshu.com/p/9f113adc0c50}
+		
+		是对Policy Graident，即\textbf{策略梯度的一种改进算法}。Importce Sampling的方法，\textbf{将Policy Gradient中On-policy的训练过程转化为Off-policy}，即\textbf{从在线学习转化为离线学习}。
+		
+		\subsection{原理}
+			
+		\subsection{实现}
+		
+					
 	\section{模仿学习}
 		在强化学习的经典任务设置中，机器所能获得的反馈信息仅有多步决策后的累积奖赏，但在现实任务中，往往能得到人类专家的决策过程范例，例如在种瓜任务上能得到农业专家的种植过程范例.从这样的范例中学习，称为"模仿学习" (imitation "learning).	
 		
 		强化学习任务中多步决策的搜索空间巨大，基于累积奖赏来学习很多步之前的合适决策非常困难'而直接模仿仿，人类专家的"状态-动作对 白闯民显显著缓解这一困难'我们称其为"直接模仿学习。
 		
+		\subsection{原理}
 		
-				
+		\subsection{实现}
+	
+	
+	
+	\section{Multi-Agent  ReinforceMent}
+		\url{http://wnzhang.net/tutorials/marl2018/index.html}
+		
+		
+						
 \chapter{统计数学方法-李航}
 
 
